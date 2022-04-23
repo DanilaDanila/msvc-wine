@@ -25,3 +25,18 @@ RUN wine64 wineboot --init && \
 # wine server like this:
 #RUN wineserver -p && \
 #    wine64 wineboot && \
+
+# Add cmake support
+RUN git clone https://gitlab.kitware.com/mstorsjo/cmake.git && \
+    cd cmake && \
+    git checkout 844ccd2280d11ada286d0e2547c0fa5ff22bd4db && \
+    mkdir build && \
+    cd build && \
+    ../configure --prefix=~/my_msvc/opt/cmake --parallel=$(nproc) -- -DCMAKE_USE_OPENSSL=OFF && \
+    make -j$(nproc) && \
+    make install && \
+
+# Run wine at least once
+wineserver -k # kills server (optional)
+wineserver -p
+wine64 wineboot
